@@ -3,19 +3,27 @@
 
 #define SERIAL_SCI_NUM 3
 
-// SCIの定義
+// SCI(シリアル・コントローラ)の定義
 #define H8_3069F_SCI0 ((volatile struct h8_3069f_sci *)0xffffb0)
 #define H8_3069F_SCI1 ((volatile struct h8_3069f_sci *)0xffffb8)
 #define H8_3069F_SCI2 ((volatile struct h8_3069f_sci *)0xffffc0)
 
-// SCI各種レジスタの定義
+/**
+ * SCI各種レジスタの定義
+ * smr: シリアルモードレジスタ，シリアル入出力のパラメータ設定を行う
+ * scr: シリアルコントロールレジスタ，シリアル入出力の制御を行う
+ * (制御: 送受信の有効/無効の切り替え，割り込みの有効/無効の切り替えなど)
+ * brr: ビットレートレジスタ，シリアル通信の速度(ポーレート)の設定
+ * tdr: トレンスミットデータレジスタ
+ * ssr: シリアルステータスレジスタ
+ */  
 struct h8_3069f_sci {
-    volatile uint8 smr;
-    volatile uint8 brr;
-    volatile uint8 scr;
-    volatile uint8 tdr;
-    volatile uint8 ssr;
-    volatile uint8 rdr;
+    volatile uint8 smr;     // シリアル通信のモード設定 
+    volatile uint8 brr;     // シリアルの転送速度(ポーレート)の設定
+    volatile uint8 scr;     // 送受信の有効/無効など
+    volatile uint8 tdr;     // 送信したい１文字を書き込む
+    volatile uint8 ssr;     // 送信完了/受信完了などを表す
+    volatile uint8 rdr;     // 受信した１文字を読み出す
     volatile uint8 scmr;
 };
 
@@ -53,20 +61,21 @@ struct h8_3069f_sci {
 
 static struct {
     volatile struct h8_3069f_sci *sci;
-} regs[SERIAL_SCI_NUM] = {
+} regs[SERIAL_SCI_NUM] = {  // メンバ：SCIレジスタ群の先頭アドレスを指す
     { H8_3069F_SCI0 },
     { H8_3069F_SCI1 },
     { H8_3069F_SCI2 },
 };
 
-// デバイス初期化
+// デバイス初期化, index:SCIの番号
 int serial_init(int index) {
     volatile struct h8_3069f_sci *sci = regs[index].sci;
-
-    sci->scr = 0;
+    
+    // 以下SCIのレジスタの設定
+    sci->scr = 0;   // シリアル送受信と割り込みを無効化
     sci->smr = 0;
-    sci->brr = 64; // 20MHzのクロックから9600bpsを生成(25MHzの場合は80にする)
-    sci->scr = H8_3069F_SCI_SCR_RE | H8_3069F_SCI_SCR_TE; // 送信可能
+    sci->brr = 64;  // 20MHzのクロックから9600bpsを生成(25MHzの場合は80にする)
+    sci->scr = H8_3069F_SCI_SCR_RE | H8_3069F_SCI_SCR_TE; // 送受信可能
     sci->ssr = 0;
 
     return 0;
@@ -82,10 +91,10 @@ int serial_is_send_enable(int index) {
 int serial_send_byte(int index, unsigned char c) {
     volatile struct h8_3069f_sci *sci = regs[index].sci;
 
-    // 送信可能になるまで待つ
+    // 送信可能になるまで待つ(送信完了ビットが落ちていないなら次へ)
     while(!serial_is_send_enable(index)) ;
-    sci->tdr = c;
-    sci->ssr &= ~H8_3069F_SCI_SSR_TDRE; // 送信開始
+    sci->tdr = c;   // 送信したい文字の書き込み
+    sci->ssr &= ~H8_3069F_SCI_SSR_TDRE; // 送信開始，ssrの送信完了ビットを立てる
 
     return 0;
 }
