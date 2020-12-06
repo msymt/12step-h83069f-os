@@ -3,4 +3,8 @@
 ## ENV
 
 * ホストOS：Windows 10 Home，20H2
-* WSL(not WSL2)，Ubuntu18.04
+* ビルド環境：WSL(not WSL2)，Ubuntu18.04
+
+## Links
+
+* [WSLで「12ステップで作る組み込みOS自作入門」の環境構築をしてHello World!してみる](https://toson.netlify.app/2020/04/16/12step-wsl-environment/)
