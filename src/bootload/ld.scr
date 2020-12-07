@@ -5,7 +5,8 @@ ENTRY("_start")
 SECTIONS
 {
 	. = 0x0;
-
+	
+	/* set 0x000000 ~ 0x0000ff */
 	.vectors : {
 		vector.o(.data)
 	}
