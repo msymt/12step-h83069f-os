@@ -4,6 +4,7 @@
 
 * ホストOS：Windows 10 Home，20H2
 * ビルド環境：WSL(not WSL2)，Ubuntu18.04
+* 端末エミュレータ：Tera Term
 
 ## Links
 
