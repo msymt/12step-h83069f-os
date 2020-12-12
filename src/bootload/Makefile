@@ -29,7 +29,7 @@ H8WRITE_SERDEV = /dev/ttyS4
 # コンパイルするソースコード群
 ##
 OBJS  = vector.o startup.o main.o
-OBJS += lib.o serial.o
+OBJS += lib.o serial.o xmodem.o
 
 # 生成する実行形式のファイル名
 TARGET = kzload
