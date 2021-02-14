@@ -5,19 +5,14 @@ void *memset(void *b, int c, long len);
 void *memcpy(void *dst, const void *src, long len);
 int memcmp(const void *b1, const void *b2, long len);
 int strlen(const char *s);
-char *strcpy(char *dst, const char *scr);
+char *strcpy(char *dst, const char *src);
 int strcmp(const char *s1, const char *s2);
-int strncmp(const char *s1, const char *s2,
-            int len);  // 長さ制限ありで文字列の比較を行う
+int strncmp(const char *s1, const char *s2, int len);
 
-int putc(unsigned char c);     // 1文字送信
-unsigned char getc(void);      /* １文字受信 */
-int gets(unsigned char *buf);  /* 文字列受信 */
-int puts(unsigned char *str);  // 文字列送信
-/**
- * 数値の16進表示
- * value: 表示したい値
- * column: 表示桁数
- */
-int putxval(unsigned long value, int column);
+int putc(unsigned char c);    /* １文字送信 */
+unsigned char getc(void);     /* １文字受信 */
+int puts(unsigned char *str); /* 文字列送信 */
+int gets(unsigned char *buf); /* 文字列受信 */
+int putxval(unsigned long value, int column); /* 数値の16進表示 */
+
 #endif
