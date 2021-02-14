@@ -1,0 +1,70 @@
+/* OUTPUT_FORMAT("elf32-h8300") */
+OUTPUT_ARCH(h8300h)
+ENTRY("_start")
+
+MEMORY {
+	/* o = 'start address', l = 'length' */
+	/* Def: ROM */
+	romall(rx)	: o = 0x000000, l = 0x080000 /* 512KB */
+	vectors(r)	: o = 0x000000, l = 0x000100 /* 256B, top of ROM */
+	rom(rx)		: o = 0x000100, l = 0x07ff00
+
+	/* Def: RAM */
+	ramall(rwx)	: o = 0xffbf20, l = 0x004000 /* 16KB */
+	buffer(rwx)	: o = 0xffdf20, l = 0x001d00 /* 8KB */
+	data(rwx)	: o = 0xfffc20, l = 0x000300
+	stack(rw)	: o = 0xffff00, l = 0x000000 /* end of RAM */
+}
+
+SECTIONS {
+	/*.: location counter*/
+
+	/* initilize with zero, below section start with zero*/
+	. = 0x0;
+
+	/* set 0x000000 ~ 0x0000ff(because initilize with zero) */
+	.vectors : {
+		vector.o(.data)
+	} > vectors /* set to interrupt vector */
+
+	/* set all object file's '.text' contents to '.text' section*/
+	.text : {
+		_text_start = . ;	/* set a symbol pointing to the top of the text section */
+		*(.text)
+		_etext = . ;		/* Place a symbol pointing to the end of the text section */
+	} > rom
+
+	/* Read Only Data, set const defined variable, string literal */
+	.rodata : {
+		_rodata_start = . ;
+		*(.strings)
+		*(.rodata)
+		*(.rodata.*)
+		_erodata = . ;
+	} > rom
+
+	/* add buffer symbol def */
+	.buffer : {
+		_buffer_start = . ;
+	} > buffer
+
+	.data : {
+		_data_start = . ;
+		*(.data)
+		_edata = . ;
+	} > data AT> rom	/* VA != PA  at .data section, AT> ROM: specify PhysAddr */
+
+	.bss : {
+		_bss_start = . ;
+		*(.bss)
+		*(COMMON)
+		_ebss = . ;
+	} > data AT> rom
+
+	. = ALIGN(4);	/* 4byte alignment */
+	_end = . ;		/* end  of section */
+
+	.stack : {
+		_stack = .;
+	} > stack
+}
