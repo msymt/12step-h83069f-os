@@ -44,7 +44,7 @@ Program Headers:
   Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
   LOAD           0x000094 0x00000000 0x00000000 0x00100 0x00100 RW  0x1
   LOAD           0x000194 0x00000100 0x00000100 0x00427 0x00427 R E 0x1     
-  LOAD           0x0005bc 0x00fffc20 0x00000527 0x00010 0x00014 RW  0x1     <- VirtAddr != PhysAddr
+  LOAD           0x0005bc 0x00fffc20 0x00000527 0x00010 0x00014 RW  0x1     <- VirtAddr != PhysAddr¡¤.data and .bss
 
 # 0x00000000: .vectors addr
 # 0x00000100: .text addr
