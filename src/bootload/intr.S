@@ -17,11 +17,17 @@ _intr_softerr:
 	mov.l	er2,@-er7
 	mov.l	er1,@-er7
 	mov.l	er0,@-er7
-    mov.l	er7,er1     # 第二引数にスタックポインタを設定(32bit, ポインタ値(H8/3069Fのアドレス範囲:24bit))
+    mov.l	er7,er1     	# 第二引数にスタックポインタを設定(32bit, ポインタ値(H8/3069Fのアドレス範囲:24bit))
+	mov.l	#_intrstack,sp	# 割り込みスタックを利用
+	mov.l	er1,@-er7		# 旧スタックポインタの値を割り込みスタックに保存
 	mov.w	#SOFTVEC_TYPE_SOFTERR,r0    # 第一引数にintr.hのSOFTVEC_TYPE_softerrを設定(16bit)
-	jsr	@_interrupt # interrupt()の呼び出し(interrupt.c)
+	jsr	@_interrupt 		# interrupt()の呼び出し(interrupt.c)
 	# スタックから汎用レジスタの値を復旧
-    mov.l	@er7+,er0
+    # #### 旧スタックポインタの値を割り込みスタックから復旧
+	mov.l	@er7+,er1
+	mov.l	er1,er7
+	# ####
+	mov.l	@er7+,er0
 	mov.l	@er7+,er1
 	mov.l	@er7+,er2
 	mov.l	@er7+,er3
@@ -43,8 +49,12 @@ _intr_syscall:
 	mov.l	er1,@-er7
 	mov.l	er0,@-er7
 	mov.l	er7,er1
+	mov.l	#_intrstack,sp
+	mov.l	er1,@-er7
 	mov.w	#SOFTVEC_TYPE_SYSCALL,r0
 	jsr	@_interrupt
+	mov.l	@er7+,er1
+	mov.l	er1,er7
 	mov.l	@er7+,er0
 	mov.l	@er7+,er1
 	mov.l	@er7+,er2
@@ -66,8 +76,12 @@ _intr_serintr:
 	mov.l	er1,@-er7
 	mov.l	er0,@-er7
 	mov.l	er7,er1
+	mov.l	#_intrstack,sp
+	mov.l	er1,@-er7
 	mov.w	#SOFTVEC_TYPE_SERINTR,r0
 	jsr	@_interrupt
+	mov.l	@er7+,er1
+	mov.l	er1,er7
 	mov.l	@er7+,er0
 	mov.l	@er7+,er1
 	mov.l	@er7+,er2
