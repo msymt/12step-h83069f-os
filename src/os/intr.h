@@ -9,7 +9,7 @@
 
 // ソフトウェア・割り込みベクタの種別の定義
 #define SOFTVEC_TYPE_SOFTERR 0  // software error
-#define SOFTVEC_TYPE_SYSCALL 0  // system call
-#define SOFTVEC_TYPE_SERINTR 0  // serial割り込み
+#define SOFTVEC_TYPE_SYSCALL 1  // system call
+#define SOFTVEC_TYPE_SERINTR 2  // serial割り込み
 
 #endif
